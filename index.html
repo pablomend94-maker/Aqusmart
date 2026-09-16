@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0A2540" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="AquaSmart" />
+  <title>AquaSmart</title>
+  <style>
+:root {
+  --ocean:#0A2540; --aqua:#00D4AA; --cyan:#00D4FF;
+  --g100:#F1F5F9; --g200:#E2E8F0; --g500:#64748B; --g700:#334155;
+  --ok:#22C55E; --warn:#F59E0B; --bad:#EF4444;
+  --card:rgba(255,255,255,.97); --sh:0 6px 24px rgba(10,37,64,.10);
+  --r:18px; --touch:48px;
+  --st:env(safe-area-inset-top,0px); --sb:env(safe-area-inset-bottom,0px); --nav:72px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;width:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Roboto,sans-serif;background:var(--ocean);color:var(--ocean);-webkit-font-smoothing:antialiased;touch-action:manipulation}
+body{overscroll-behavior:none;user-select:none;-webkit-user-select:none}
+input,textarea,select{user-select:text;-webkit-user-select:text;font-size:16px!important}
+#boot{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;height:100dvh;color:#fff;padding:24px;text-align:center}
+#boot h1{font-size:28px;margin-bottom:8px}
+#boot p{opacity:.85;font-size:15px;line-height:1.4;max-width:280px}
+#boot .err{background:#7F1D1D;border-radius:14px;padding:16px;margin-top:20px;font-size:14px;text-align:left}
+#boot .spin{width:36px;height:36px;border:3px solid rgba(255,255,255,.25);border-top-color:#00D4AA;border-radius:50%;animation:sp .8s linear infinite;margin:20px auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+.app{display:flex;flex-direction:column;height:100%;height:100dvh;max-width:480px;margin:0 auto;background:linear-gradient(180deg,#0A2540 0%,#0C2D4A 26%,#F0F7FC 26%);position:relative;overflow:hidden;padding-top:var(--st)}
+.screen{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;padding:12px 16px calc(var(--nav) + var(--sb) + 16px)}
+.hdr{padding:10px 16px 6px;color:#fff;flex-shrink:0}
+.hdr-s{font-size:13px;opacity:.85;font-weight:500}
+.hdr-t{font-size:26px;font-weight:700;margin-top:2px;line-height:1.2}
+.card{background:var(--card);border-radius:var(--r);padding:18px;margin-bottom:14px;box-shadow:var(--sh);border:1px solid rgba(255,255,255,.7)}
+.ct{font-size:16px;font-weight:650;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;font-size:13px;font-weight:600}
+.bg{background:#DCFCE7;color:#166534}.bw{background:#FEF3C7;color:#92400E}.bb{background:#FEE2E2;color:#991B1B}
+.qg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.qb{background:#fff;border-radius:var(--r);padding:18px 12px;display:flex;flex-direction:column;align-items:center;gap:10px;border:none;box-shadow:var(--sh);min-height:112px;cursor:pointer;color:var(--ocean)}
+.qb:active{transform:scale(.96)}
+.iw{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px}
+.qb span{font-size:14px;font-weight:650;text-align:center}
+.qb small{font-size:11px;color:var(--g500);text-align:center;line-height:1.3}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:var(--touch);padding:14px 18px;border-radius:14px;font-size:16px;font-weight:650;border:none;cursor:pointer;text-decoration:none}
+.btn:active{transform:scale(.97);opacity:.92}
+.bp{background:linear-gradient(135deg,#00D4AA,#00B894);color:#04342B;box-shadow:0 4px 16px rgba(0,212,170,.35)}
+.bw2{background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;box-shadow:0 4px 16px rgba(37,211,102,.35)}
+.bs{background:#fff;color:var(--ocean);border:1.5px solid var(--g200)}
+.bsm{min-height:44px;padding:10px 14px;font-size:14px;border-radius:12px}
+.fg{margin-bottom:16px}
+.fl{display:block;font-size:14px;font-weight:600;color:var(--g700);margin-bottom:8px}
+.fi,.fs,.ft{width:100%;min-height:var(--touch);padding:14px 16px;border-radius:14px;border:1.5px solid var(--g200);background:#fff;color:var(--ocean);outline:none;-webkit-appearance:none}
+.fi:focus,.fs:focus,.ft:focus{border-color:var(--aqua);box-shadow:0 0 0 3px rgba(0,212,170,.18)}
+.ft{min-height:100px;resize:vertical}
+.fs{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px}
+.ir{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.bn{position:absolute;bottom:0;left:0;right:0;background:rgba(255,255,255,.98);backdrop-filter:blur(20px);border-top:1px solid rgba(10,37,64,.08);display:flex;justify-content:space-around;align-items:center;padding:6px 4px calc(6px + var(--sb));z-index:100;min-height:calc(var(--nav) + var(--sb));box-shadow:0 -4px 24px rgba(10,37,64,.08)}
+.ni{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 6px;border:none;background:transparent;color:var(--g500);font-size:11px;font-weight:550;border-radius:14px;min-width:60px;min-height:56px;cursor:pointer}
+.ni.on{color:var(--ocean)}
+.ni.on .nico{background:linear-gradient(135deg,#00D4AA,#00B894);color:#04342B}
+.nico{width:40px;height:40px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:18px;position:relative}
+.fab{position:fixed;bottom:calc(var(--nav) + var(--sb) + 12px);right:max(16px,calc(50% - 240px + 16px));width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 24px rgba(37,211,102,.45);z-index:90;border:none;font-size:28px;cursor:pointer;text-decoration:none}
+.fab:active{transform:scale(.92)}
+.tabs{display:flex;gap:4px;margin-bottom:16px;background:var(--g100);padding:4px;border-radius:14px}
+.tab{flex:1;min-height:44px;padding:10px 8px;text-align:center;font-size:13px;font-weight:600;border-radius:11px;border:none;background:transparent;color:var(--g500);cursor:pointer}
+.tab.on{background:#fff;color:var(--ocean);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.pg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pi{background:#F8FAFC;border-radius:12px;padding:12px;text-align:center}
+.pi .l{font-size:11px;color:var(--g500)}.pi .v{font-size:20px;font-weight:700;margin-top:2px}
+.rb{background:#F8FAFC;border-radius:14px;padding:14px;margin-bottom:10px;border-left:4px solid var(--aqua)}
+.rb.w{border-left-color:var(--warn)}.rb.b{border-left-color:var(--bad)}.rb.g{border-left-color:var(--ok)}
+.pc{background:#fff;border-radius:var(--r);padding:20px;margin-bottom:14px;box-shadow:var(--sh);border:1px solid var(--g200);position:relative}
+.pc.f{border:2px solid var(--aqua)}
+.pb{position:absolute;top:14px;right:14px;background:var(--aqua);color:#04342B;font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px}
+.pn{font-size:19px;font-weight:700}.pp{font-size:28px;font-weight:800;margin:8px 0 4px}.pp span{font-size:14px;font-weight:500;color:var(--g500)}
+.pv{font-size:14px;color:var(--g500);margin-bottom:12px}
+.pben{list-style:none;margin-bottom:18px}
+.pben li{font-size:14px;padding:6px 0;display:flex;gap:10px;line-height:1.35}
+.pben li::before{content:"✓";color:var(--aqua);font-weight:700}
+.ec{background:#fff;border-radius:var(--r);padding:20px;margin-bottom:14px;box-shadow:var(--sh)}
+.ei{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:28px}
+.et{font-size:18px;font-weight:700;margin-bottom:8px}.ed{font-size:14px;color:var(--g500);line-height:1.5;margin-bottom:16px}
+.sub{font-size:14px;color:var(--g500);margin-bottom:16px;line-height:1.45}
+.ab{border-radius:var(--r);padding:16px;margin-bottom:14px;display:flex;flex-direction:column;gap:12px;border:1.5px solid transparent}
+.ab.w{background:linear-gradient(135deg,#FEF3C7,#FDE68A);border-color:#F59E0B;color:#78350F}
+.ab.b{background:linear-gradient(135deg,#FEE2E2,#FECACA);border-color:#EF4444;color:#7F1D1D}
+.aba{display:flex;gap:10px;flex-wrap:wrap}.aba .btn{flex:1;min-width:120px}
+.sg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
+.sc{background:#fff;border-radius:14px;padding:16px 10px;text-align:center;box-shadow:var(--sh);border:1px solid var(--g200)}
+.sc.u{background:linear-gradient(135deg,#FEF3C7,#FDE68A);border-color:#F59E0B}
+.sc.c{background:linear-gradient(135deg,#FEE2E2,#FECACA);border-color:#EF4444}
+.sv{font-size:26px;font-weight:800}.sl{font-size:11px;font-weight:600;color:var(--g500);margin-top:4px;text-transform:uppercase}
+.ac{background:#fff;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:var(--sh);border:1px solid var(--g200);border-left:5px solid #F59E0B}
+.ac.b{border-left-color:#EF4444}.ac.u{background:#FFFBEB}.ac.b.u{background:#FEF2F2}
+.safe{background:#FEF3C7;border-radius:12px;padding:12px 14px;font-size:13px;color:#92400E;margin-top:10px;line-height:1.45}
+.bc{position:absolute;top:-2px;right:-4px;background:#EF4444;color:#fff;font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+.empty{text-align:center;padding:40px 20px;color:var(--g500)}
+.hi{background:#fff;border-radius:14px;padding:14px 16px;margin-bottom:10px;border:1px solid var(--g200)}
+.fn{text-align:center;margin-top:20px;font-size:12px;color:#94A3B8;line-height:1.4}
+.hidden{display:none!important}
+  </style>
+</head>
+<body>
+<div id="boot">
+  <h1>AquaSmart</h1>
+  <p>Asistente Inteligente para Piscinas</p>
+  <div class="spin" id="spin"></div>
+  <p id="bootMsg" style="margin-top:12px">Cargando…</p>
+  <div id="bootErr" class="err hidden"></div>
+  <div id="bootHelp" style="margin-top:28px;padding:16px;background:rgba(255,255,255,0.08);border-radius:14px;font-size:14px;line-height:1.5;max-width:300px;text-align:left">
+    <strong style="display:block;margin-bottom:8px">Si se queda cargando:</strong>
+    1. Tocá el botón <strong>Compartir</strong> (cuadro con flecha abajo)<br>
+    2. Elegí <strong>Safari</strong> o “Abrir en Safari”<br>
+    3. No uses solo la vista previa de Archivos
+  </div>
+</div>
+<div id="app" class="app hidden"></div>
+
+<script>
+(function(){
+  var WA='595982934008', WAD='+595 982 934 008';
+  var PLANS=[
+    {id:'basico',name:'Plan Básico',visits:2,price:250000,desc:'Para piscinas que requieren mantenimiento periódico básico.'},
+    {id:'estandar',name:'Plan Estándar',visits:4,price:350000,desc:'Ideal para mantenimiento semanal regular y control.',f:1},
+    {id:'intensivo',name:'Plan Intensivo',visits:8,price:600000,desc:'Para piscinas que necesitan atención y control más frecuente.'},
+    {id:'premium',name:'Plan Premium',visits:12,price:850000,desc:'Máxima frecuencia, monitoreo y cuidado profesional.'}
+  ];
+  var BENS=['Limpieza profesional','Control de parámetros químicos','Monitoreo del estado del agua','Inspección de filtro y bomba','Revisión general del sistema'];
+
+  function $(id){return document.getElementById(id)}
+  function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
+  function lsG(k,d){try{var r=localStorage.getItem(k);return r?JSON.parse(r):d}catch(e){return d}}
+  function lsS(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+  function wa(m){return 'https://wa.me/'+WA+'?text='+encodeURIComponent(m)}
+  function openWA(m){
+    var url=wa(m);
+    // 1) Intentar navegación directa (mejor en WebViews / Messenger)
+    try { location.href = url; return; } catch(e) {}
+    // 2) Fallback con link
+    var a=document.createElement('a');
+    a.href=url; a.target='_system'; a.rel='noopener';
+    document.body.appendChild(a); a.click();
+    try{document.body.removeChild(a)}catch(e){}
+  }
+  function fmtV(n){return Number(n).toLocaleString('es-PY')+' L'}
+  function fmtP(n){return 'Gs. '+Number(n).toLocaleString('es-PY')}
+  function em(s){return s==='good'?'🟢':s==='warn'?'🟡':s==='bad'?'🔴':'⚪'}
+  function st(s){return s==='good'?'Bueno':s==='warn'?'Precaución':s==='bad'?'Atención':'Sin datos'}
+  function sPh(p){if(p>=7.2&&p<=7.6)return'good';if((p>=7&&p<7.2)||(p>7.6&&p<=7.8))return'warn';return'bad'}
+  function sCl(c){if(c>=1&&c<=3)return'good';if((c>=.5&&c<1)||(c>3&&c<=5))return'warn';return'bad'}
+  function sAk(a){if(a>=80&&a<=120)return'good';if((a>=60&&a<80)||(a>120&&a<=150))return'warn';return'bad'}
+  function sTe(t){if(t>=24&&t<=30)return'good';if((t>=20&&t<24)||(t>30&&t<=34))return'warn';return'bad'}
+
+
+  function dosePh(ph,vol){
+    if(!vol) return 'Configurá el volumen de tu piscina (pestaña Volumen) para ver una dosis orientativa. También podés consultarnos por WhatsApp.';
+    var delta = Math.max(0, 7.4 - ph);
+    // ~15-25 g soda ash / 10.000 L por cada 0.2 de pH (referencia)
+    var g = Math.round((delta / 0.2) * 20 * (vol / 10000));
+    if(g < 5) g = 5;
+    return 'Dosis orientativa: unos '+g+' g de elevador de pH (Soda Ash) para una piscina de '+vol.toLocaleString('es-PY')+' L. La dosis final depende de la concentración del producto: verificá el envase o escribinos por WhatsApp para afinarla.';
+  }
+  function doseCl(cl,vol){
+    if(!vol) return 'Configurá el volumen (pestaña Volumen) para estimar la dosis. O consultanos por WhatsApp.';
+    var need = Math.max(0, 2.0 - cl); // objetivo ~2 ppm
+    // ~10-15 g cloro 65-70% / 10.000 L por 1 ppm
+    var g = Math.round(need * 12 * (vol / 10000));
+    if(g < 5 && need > 0) g = 5;
+    if(need <= 0) return 'El cloro ya está en rango o alto. No agregues más.';
+    return 'Dosis orientativa: unos '+g+' g de cloro (al ~65–70%) para subir hacia 2 ppm en '+vol.toLocaleString('es-PY')+' L. Si usás cloro líquido u otra concentración, la cantidad cambia: consultanos por WhatsApp con el producto que tenés.';
+  }
+  function doseAk(ak,vol){
+    if(!vol) return 'Configurá el volumen para estimar la dosis de bicarbonato, o escribinos por WhatsApp.';
+    var need = Math.max(0, 100 - ak); // objetivo ~100
+    // ~15-18 g bicarbonato / 10.000 L por 1 ppm
+    var g = Math.round(need * 16 * (vol / 10000));
+    if(g < 10 && need > 0) g = 10;
+    return 'Dosis orientativa: unos '+g+' g de bicarbonato de sodio (elevador de alcalinidad) para acercarte a 100 ppm en '+vol.toLocaleString('es-PY')+' L. Disolvé en un balde y esparcí con la bomba en marcha.';
+  }
+
+  function analyze(inp){
+    var recs=[],ph=inp.ph,cl=inp.chlorine,ak=inp.alkalinity,te=inp.temperature,vol=inp.volumeLiters;
+    if(ph!=null&&!isNaN(ph)){
+      var s=sPh(ph),act=s==='good'?'El pH está en el rango ideal (7.2 – 7.6).':ph<7.2?'El pH está bajo. Puede corroer equipos e irritar la piel.':'El pH está alto. Puede reducir la efectividad del cloro.';
+      var chem=s==='good'?null:ph<7.2?'Elevador de pH (también conocido como Soda Ash)':'Reductor de pH (Ácido Muriático diluido o Bisulfato de Sodio)';
+      recs.push({p:'pH',s:s,c:ph.toFixed(1),a:act,chem:chem,dos:s==='good'?null:dosePh(ph,vol),safe:'Usá guantes. Seguí las instrucciones del producto.',rt:'Volvé a medir en 4–6 horas.'});
+    }
+    if(cl!=null&&!isNaN(cl)){
+      var s=sCl(cl),act=s==='good'?'El cloro libre está en el rango recomendado (1 – 3 ppm).':cl<1?'El cloro está bajo. El agua puede no estar bien desinfectada.':'El cloro está alto. Puede irritar ojos y piel.';
+      recs.push({p:'Cloro libre',s:s,c:cl.toFixed(1)+' ppm',a:act,chem:cl<1?'Cloro (hipoclorito, dicloro, tricloro o líquido)':null,dos:cl<1?doseCl(cl,vol):'No agregues más cloro. Esperá a que baje de forma natural o diluí con agua fresca si supera 5 ppm.',safe:'Manejá el cloro con cuidado.',rt:'Medí en 2–4 horas.'});
+    }
+    if(ak!=null&&!isNaN(ak)){
+      var s=sAk(ak),act=s==='good'?'La alcalinidad está en el rango ideal (80 – 120 ppm).':ak<80?'Alcalinidad baja: el pH puede oscilar fácilmente.':'Alcalinidad alta: dificulta ajustar el pH. Mejor consultar profesional.';
+      recs.push({p:'Alcalinidad',s:s,c:Math.round(ak)+' ppm',a:act,chem:ak<80?'Elevador de alcalinidad (Bicarbonato de Sodio)':null,dos:ak<80?doseAk(ak,vol):'La alcalinidad alta se baja de forma gradual con ácido. Por seguridad te recomendamos que un técnico de MG Soluciones lo haga.',safe:'Seguí el fabricante.',rt:'Medí en 6–8 horas.'});
+    }
+    if(te!=null&&!isNaN(te)){
+      var s=sTe(te);
+      recs.push({p:'Temperatura',s:s,c:te.toFixed(1)+' °C',a:s==='good'?'Temperatura agradable (24–30 °C).':te<24?'Agua fresca. Considerá climatización.':'Agua caliente: el cloro se consume más rápido.'});
+    }
+    var ov=recs.some(function(r){return r.s==='bad'})?'bad':recs.some(function(r){return r.s==='warn'})?'warn':recs.length?'good':'unknown';
+    var sum=!recs.length?'No se ingresaron parámetros.':ov==='good'?'Los parámetros están en buen estado. ¡Seguí así!':ov==='warn'?'Algunos parámetros requieren atención.':'Hay parámetros fuera de rango. Te recomendamos actuar.';
+    return {id:'c_'+Date.now(),date:new Date().toISOString(),input:inp,ov:ov,recs:recs,sum:sum};
+  }
+
+  var S={
+    tab:'inicio',
+    profile:lsG('as_profile',{name:'',whatsapp:'',email:'',city:''}),
+    pool:lsG('as_pool',null),
+    history:lsG('as_history',[]),
+    alerts:lsG('as_alerts',[])
+  };
+  function save(){
+    lsS('as_profile',S.profile);lsS('as_pool',S.pool);
+    lsS('as_history',S.history.slice(0,50));lsS('as_alerts',S.alerts.slice(0,30));
+  }
+  function unread(){return S.alerts.filter(function(a){return !a.read}).length}
+
+  function go(t){S.tab=t;render()}
+  function addResult(r){
+    S.history=[r].concat(S.history).slice(0,50);
+    if(r.ov==='warn'||r.ov==='bad'){
+      var bp=r.recs.filter(function(x){return x.s!=='good'}).map(function(x){return x.p});
+      var al={id:'a_'+r.id,date:r.date,level:r.ov,
+        title:r.ov==='bad'?'🔴 Atención: parámetros fuera de rango':'🟡 Precaución: revisá tu piscina',
+        message:bp.length?'Valores a corregir: '+bp.join(', ')+'. '+r.sum:r.sum,
+        cid:r.id,read:false};
+      if(!S.alerts.some(function(x){return x.cid===r.id}))S.alerts=[al].concat(S.alerts).slice(0,30);
+    }
+    save();render();
+  }
+
+  function render(){
+    var root=$('app');
+    root.innerHTML='';
+    root.classList.remove('hidden');
+    $('boot').classList.add('hidden');
+
+    if(S.tab==='inicio')renderHome(root);
+    else if(S.tab==='calcular')renderCalc(root);
+    else if(S.tab==='planes')renderPlanes(root);
+    else if(S.tab==='servicios')renderServ(root);
+    else if(S.tab==='equipos')renderEquip(root);
+    else if(S.tab==='alertas')renderAlertas(root);
+    else if(S.tab==='perfil')renderPerfil(root);
+
+    var fab=el('a','fab','💬');
+    fab.href=wa('Hola MG Soluciones. Necesito ayuda con mi piscina. Enviado desde AquaSmart.');
+    fab.target='_blank';
+    root.appendChild(fab);
+
+    var nav=el('nav','bn');
+    var items=[
+      {id:'inicio',icon:'🏠',l:'Inicio'},
+      {id:'calcular',icon:'🧪',l:'Calcular'},
+      {id:'planes',icon:'📋',l:'Planes'},
+      {id:'servicios',icon:'🔧',l:'Servicios'},
+      {id:'perfil',icon:'👤',l:'Perfil',badge:unread()}
+    ];
+    items.forEach(function(n){
+      var b=el('button','ni'+(S.tab===n.id||(n.id==='perfil'&&S.tab==='alertas')?' on':''));
+      var ic=el('div','nico',n.icon);
+      if(n.badge>0){var bc=el('span','bc',n.badge>9?'9+':String(n.badge));ic.appendChild(bc)}
+      b.appendChild(ic);
+      b.appendChild(document.createTextNode(n.l));
+      b.onclick=function(){go(n.id)};
+      nav.appendChild(b);
+    });
+    root.appendChild(nav);
+  }
+
+  function hdr(sub,title){
+    var h=el('div','hdr');
+    h.appendChild(el('div','hdr-s',sub));
+    h.appendChild(el('div','hdr-t',title));
+    return h;
+  }
+  function screen(){return el('div','screen')}
+  function card(){return el('div','card')}
+  function btn(cls,txt,fn){var b=el('button',cls,txt);if(fn)b.onclick=fn;return b}
+  function waBtn(cls,txt,msg){
+    var a=el('a',cls,txt);
+    a.href=wa(msg); a.target='_blank'; a.rel='noopener noreferrer';
+    a.style.textDecoration='none'; a.style.display='flex';
+    // También intentar openWA al click por si el WebView bloquea target=_blank
+    a.onclick=function(ev){ try{ openWA(msg); }catch(e){} };
+    return a;
+  }
+
+  function renderHome(root){
+    root.appendChild(hdr('AquaSmart · MG Soluciones','¡Hola, '+(S.profile.name||'Pablo').trim()+'!'));
+    var sc=screen();
+    var last=S.history[0];
+    var ur=unread();
+
+    if(last&&(last.ov==='warn'||last.ov==='bad')){
+      var ab=el('div','ab '+(last.ov==='bad'?'b':'w'));
+      ab.innerHTML='<div style="font-weight:700;font-size:15px">'+(last.ov==='bad'?'Tu piscina necesita atención':'Hay parámetros en precaución')+'</div>';
+      var msg=last.recs.filter(function(r){return r.s!=='good'}).map(function(r){return r.p+': '+r.c}).join(' · ');
+      ab.appendChild(el('div',null,'<div style="font-size:13px;margin-top:4px">'+msg+'</div>'));
+      var acts=el('div','aba');
+      acts.appendChild(btn('btn bw2 bsm','💬 Hablar con MG Soluciones',function(){
+        var lines=['Hola MG Soluciones. AquaSmart me alertó sobre mi piscina y necesito ayuda.',''];
+        if(last.input.ph!=null)lines.push('pH: '+last.input.ph);
+        if(last.input.chlorine!=null)lines.push('Cloro libre: '+last.input.chlorine+' ppm');
+        if(last.input.alkalinity!=null)lines.push('Alcalinidad: '+last.input.alkalinity+' ppm');
+        if(last.input.volumeLiters)lines.push('Volumen: '+fmtV(last.input.volumeLiters));
+        lines.push('','Quisiera recibir asesoramiento.');
+        openWA(lines.join('\n'));
+      }));
+      acts.appendChild(btn('btn bs bsm','Ver alertas',function(){go('alertas')}));
+      ab.appendChild(acts);
+      sc.appendChild(ab);
+    } else if(ur>0){
+      var chip=el('div','card');
+      chip.style.cssText='background:linear-gradient(135deg,#FEF3C7,#FDE68A);border-color:#F59E0B;cursor:pointer';
+      chip.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:600;color:#78350F">⚠️ Tenés '+ur+' alerta'+(ur>1?'s':'')+' sin leer</span><span style="font-weight:600;color:#92400E">Ver →</span></div>';
+      chip.onclick=function(){go('alertas')};
+      sc.appendChild(chip);
+    }
+
+    var stCard=card();
+    stCard.appendChild(el('div','ct','🌊 Estado de tu piscina'));
+    if(last){
+      var row=el('div');row.style.cssText='display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap';
+      row.innerHTML='<span class="badge '+(last.ov==='good'?'bg':last.ov==='warn'?'bw':'bb')+'">'+em(last.ov)+' '+st(last.ov)+'</span><span style="font-size:12px;color:#64748B">'+new Date(last.date).toLocaleDateString('es-PY',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})+'</span>';
+      stCard.appendChild(row);
+      var pg=el('div','pg');
+      if(last.input.ph!=null)pg.innerHTML+='<div class="pi"><div class="l">pH</div><div class="v">'+last.input.ph.toFixed(1)+'</div></div>';
+      if(last.input.chlorine!=null)pg.innerHTML+='<div class="pi"><div class="l">Cloro libre</div><div class="v">'+last.input.chlorine.toFixed(1)+'</div></div>';
+      if(last.input.alkalinity!=null)pg.innerHTML+='<div class="pi"><div class="l">Alcalinidad</div><div class="v">'+Math.round(last.input.alkalinity)+'</div></div>';
+      if(last.input.temperature!=null)pg.innerHTML+='<div class="pi"><div class="l">Temperatura</div><div class="v">'+last.input.temperature.toFixed(0)+'°</div></div>';
+      stCard.appendChild(pg);
+      if(S.pool&&S.pool.volumeLiters)stCard.appendChild(el('div',null,'<div style="margin-top:10px;font-size:13px;color:#64748B">Volumen: '+fmtV(S.pool.volumeLiters)+'</div>'));
+    } else {
+      var empty=el('div','empty');empty.style.padding='16px 0';
+      empty.innerHTML='<p>Todavía no hay análisis registrados.</p>';
+      empty.appendChild(btn('btn bp bsm','Analizar el agua ahora',function(){go('calcular')}));
+      stCard.appendChild(empty);
+    }
+    sc.appendChild(stCard);
+
+    var qg=el('div','qg');
+    function qb(icon,bg,title,sub,t){
+      var b=el('button','qb');
+      b.innerHTML='<div class="iw" style="background:'+bg+'">'+icon+'</div><span>'+title+'</span><small>'+sub+'</small>';
+      b.onclick=function(){go(t)};
+      return b;
+    }
+    qg.appendChild(qb('🧪','linear-gradient(135deg,#00D4AA,#00B894)','Calcular','Analiza el agua','calcular'));
+    qg.appendChild(qb('📋','linear-gradient(135deg,#00D4FF,#0099CC)','Planes','Mantenimiento','planes'));
+    qg.appendChild(qb('🔧','linear-gradient(135deg,#F59E0B,#D97706)','Servicios','Solicitar asistencia','servicios'));
+    qg.appendChild(qb('⚡','linear-gradient(135deg,#8B5CF6,#6D28D9)','Equipos','Mejorá tu piscina','equipos'));
+    sc.appendChild(qg);
+
+    sc.appendChild(waBtn('btn bw2','💬 Quiero que me ayuden con mi piscina','Hola MG Soluciones. Quiero consultar sobre mi piscina. Enviado desde AquaSmart.'));
+    root.appendChild(sc);
+  }
+
+  function renderCalc(root){
+    root.appendChild(hdr('AquaSmart','Calculadora'));
+    var sc=screen();
+    var sub=S._csub||'params';
+    function setSub(s){S._csub=s;render()}
+
+    var tabs=el('div','tabs');
+    ['params','volume','history'].forEach(function(k,i){
+      var labels=['Parámetros','Volumen','Historial'];
+      var t=el('button','tab'+(sub===k?' on':''),labels[i]);
+      t.onclick=function(){setSub(k)};
+      tabs.appendChild(t);
+    });
+    sc.appendChild(tabs);
+
+    if(sub==='params'){
+      sc.appendChild(el('p','sub','Ingresá solo los valores que midiste. No es necesario completar todos.'));
+      if(S.pool&&S.pool.volumeLiters)sc.appendChild(el('div',null,'<div style="font-size:13px;color:#64748B;margin-bottom:12px">Volumen: <strong>'+fmtV(S.pool.volumeLiters)+'</strong></div>'));
+      var c=card();
+      c.innerHTML='<div class="ir"><div class="fg"><label class="fl">pH</label><input class="fi" id="i_ph" type="number" step="0.1" placeholder="ej. 7.4" value="'+(S._ph||'')+'"></div><div class="fg"><label class="fl">Cloro libre (ppm)</label><input class="fi" id="i_cl" type="number" step="0.1" placeholder="ej. 1.5" value="'+(S._cl||'')+'"></div></div><div class="ir"><div class="fg"><label class="fl">Alcalinidad (ppm)</label><input class="fi" id="i_ak" type="number" placeholder="ej. 100" value="'+(S._ak||'')+'"></div><div class="fg"><label class="fl">Temperatura (°C)</label><input class="fi" id="i_te" type="number" step="0.5" placeholder="ej. 28" value="'+(S._te||'')+'"></div></div>';
+      c.appendChild(btn('btn bp','🧪 Analizar agua',function(){
+        S._ph=$('i_ph').value;S._cl=$('i_cl').value;S._ak=$('i_ak').value;S._te=$('i_te').value;
+        var inp={};
+        if(S._ph!=='')inp.ph=parseFloat(S._ph);
+        if(S._cl!=='')inp.chlorine=parseFloat(S._cl);
+        if(S._ak!=='')inp.alkalinity=parseFloat(S._ak);
+        if(S._te!=='')inp.temperature=parseFloat(S._te);
+        if(S.pool&&S.pool.volumeLiters)inp.volumeLiters=S.pool.volumeLiters;
+        if(!Object.keys(inp).filter(function(k){return k!=='volumeLiters'}).length){alert('Ingresá al menos un parámetro.');return}
+        var res=analyze(inp);S._result=res;addResult(res);
+      }));
+      sc.appendChild(c);
+
+      if(S._result){
+        var r=S._result;
+        var rc=card();
+        rc.appendChild(el('div','ct','Resultado — '+em(r.ov)+' '+st(r.ov)));
+        rc.appendChild(el('p',null,'<p style="font-size:14px;margin-bottom:12px">'+r.sum+'</p>'));
+        if(r.ov==='warn'||r.ov==='bad'){
+          var ab=el('div','ab '+(r.ov==='bad'?'b':'w'));
+          ab.innerHTML='<div style="font-weight:700">'+(r.ov==='bad'?'Por seguridad y para no dañar equipos, lo ideal es que un profesional lo revise':'Revisá estos parámetros cuanto antes')+'</div>';
+          rc.appendChild(ab);
+        }
+        r.recs.forEach(function(rec){
+          var rb=el('div','rb '+(rec.s==='good'?'g':rec.s==='warn'?'w':'b'));
+          rb.innerHTML='<div style="font-size:12px;color:#64748B">'+rec.p+'</div><div style="font-size:17px;font-weight:650">'+rec.c+' — '+st(rec.s)+'</div><p style="font-size:13px;margin-top:6px">'+rec.a+'</p>'+
+            (rec.chem?'<p style="font-size:13px;margin-top:4px"><strong>Producto:</strong> '+rec.chem+'</p>':'')+
+            (rec.dos?'<p style="font-size:12px;margin-top:4px;color:#64748B">'+rec.dos+'</p>':'')+
+            (rec.safe?'<div class="safe">'+rec.safe+'</div>':'')+
+            (rec.rt?'<p style="font-size:12px;margin-top:6px;color:#64748B">⏱ '+rec.rt+'</p>':'');
+          rc.appendChild(rb);
+        });
+        if(!(S.pool&&S.pool.volumeLiters)){
+          var volTip=el('div','card');
+          volTip.style.cssText='background:#E0F2FE;border-color:#38BDF8;margin-bottom:12px';
+          volTip.innerHTML='<p style="font-size:14px;font-weight:600;color:#0C4A6E;margin-bottom:8px">💡 Para ver dosis más precisas</p><p style="font-size:13px;color:#0C4A6E;margin-bottom:12px;line-height:1.4">Configurá el volumen de tu piscina y te mostramos una cantidad orientativa de producto.</p>';
+          volTip.appendChild(btn('btn bp bsm','Configurar volumen ahora',function(){S._csub='volume';render()}));
+          rc.appendChild(volTip);
+        }
+        var waBox=el('div');waBox.style.marginTop='16px';
+        waBox.innerHTML='<p style="font-size:14px;font-weight:600;margin-bottom:8px">¿Querés que un profesional te ayude?</p><p style="font-size:13px;color:#64748B;margin-bottom:10px;line-height:1.4">MG Soluciones puede revisar tu piscina y dejarte el agua en condiciones. Escribimos por WhatsApp y coordinamos.</p>';
+        waBox.appendChild(btn('btn bw2','💬 Pedir asesoramiento por WhatsApp',function(){
+          var lines=['Hola MG Soluciones. Hice un análisis con AquaSmart y necesito ayuda.',''];
+          if(r.input.ph!=null)lines.push('pH: '+r.input.ph);
+          if(r.input.chlorine!=null)lines.push('Cloro libre: '+r.input.chlorine+' ppm');
+          if(r.input.alkalinity!=null)lines.push('Alcalinidad: '+r.input.alkalinity+' ppm');
+          if(r.input.temperature!=null)lines.push('Temperatura: '+r.input.temperature+' °C');
+          if(r.input.volumeLiters)lines.push('Volumen: '+fmtV(r.input.volumeLiters));
+          lines.push('','AquaSmart me recomienda revisar estos parámetros.','Quisiera recibir asesoramiento.');
+          openWA(lines.join('\n'));
+        }));
+        rc.appendChild(waBox);
+        sc.appendChild(rc);
+      }
+    } else if(sub==='volume'){
+      sc.appendChild(el('p','sub','El volumen es opcional. Si lo conocés, las dosis serán más precisas.'));
+      var c=card();
+      c.innerHTML='<div class="fg"><label class="fl">Forma</label><select class="fs" id="v_shape"><option value="rectangular">Rectangular / cuadrada</option><option value="circular">Circular</option><option value="unknown">No sé / irregular</option></select></div>'+
+        '<div id="v_rect"><div class="ir"><div class="fg"><label class="fl">Largo (m)</label><input class="fi" id="v_l" type="number" step="0.1"></div><div class="fg"><label class="fl">Ancho (m)</label><input class="fi" id="v_w" type="number" step="0.1"></div></div><div class="fg"><label class="fl">Profundidad media (m)</label><input class="fi" id="v_d" type="number" step="0.1"></div></div>'+
+        '<div id="v_circ" class="hidden"><div class="fg"><label class="fl">Diámetro (m)</label><input class="fi" id="v_dia" type="number" step="0.1"></div><div class="fg"><label class="fl">Profundidad media (m)</label><input class="fi" id="v_d2" type="number" step="0.1"></div></div>'+
+        '<div id="v_unk" class="hidden"><p style="font-size:13px;color:#64748B;line-height:1.5;margin-bottom:12px">Dividí en secciones aproximadas (largo × ancho × profundidad × 1000) y sumá. O preguntá al constructor.</p></div>'+
+        '<div class="fg"><label class="fl">O volumen manual (litros)</label><input class="fi" id="v_man" type="text" placeholder="ej. 35000"></div>';
+      sc.appendChild(c);
+      setTimeout(function(){
+        var sh=$('v_shape');
+        function upd(){
+          $('v_rect').classList.toggle('hidden',sh.value!=='rectangular');
+          $('v_circ').classList.toggle('hidden',sh.value!=='circular');
+          $('v_unk').classList.toggle('hidden',sh.value!=='unknown');
+        }
+        sh.onchange=upd;upd();
+      },0);
+      c.appendChild(btn('btn bp','Guardar volumen',function(){
+        var vol=0,man=$('v_man').value,sh=$('v_shape').value;
+        if(man)vol=parseFloat(man.replace(/\./g,'').replace(',','.'));
+        else if(sh==='rectangular'){var l=parseFloat($('v_l').value),w=parseFloat($('v_w').value),d=parseFloat($('v_d').value);if(l&&w&&d)vol=Math.round(l*w*d*1000)}
+        else if(sh==='circular'){var dia=parseFloat($('v_dia').value),d=parseFloat($('v_d2').value);if(dia&&d){var r=dia/2;vol=Math.round(Math.PI*r*r*d*1000)}}
+        if(vol>0){S.pool=Object.assign({},S.pool||{},{volumeLiters:vol,shape:sh});save();alert('Volumen guardado: '+fmtV(vol));render()}
+        else alert('Completá las medidas o el volumen manual.');
+      }));
+    } else {
+      sc.appendChild(el('p','sub','Historial guardado en este dispositivo.'));
+      if(!S.history.length)sc.appendChild(el('div','empty','<p>Todavía no hay cálculos guardados.</p>'));
+      else S.history.forEach(function(h){
+        var hi=el('div','hi');
+        hi.innerHTML='<div style="font-size:12px;color:#64748B">'+new Date(h.date).toLocaleString('es-PY')+' — '+em(h.ov)+' '+st(h.ov)+'</div>'+
+          '<div style="font-size:14px;margin:4px 0">'+(h.input.ph!=null?'pH '+h.input.ph+' · ':'')+(h.input.chlorine!=null?'Cl '+h.input.chlorine+' · ':'')+(h.input.alkalinity!=null?'Alk '+h.input.alkalinity+' · ':'')+(h.input.temperature!=null?h.input.temperature+'°C':'')+'</div>'+
+          '<p style="font-size:13px;color:#64748B">'+h.sum+'</p>';
+        sc.appendChild(hi);
+      });
+    }
+    root.appendChild(sc);
+  }
+
+  function renderPlanes(root){
+    root.appendChild(hdr('AquaSmart','Planes de mantenimiento'));
+    var sc=screen();
+    sc.appendChild(el('p','sub','Tu piscina cuidada por profesionales. Vos disfrutás, nosotros nos ocupamos del resto. Coordinamos todo por WhatsApp, sin vueltas.'));
+    PLANS.forEach(function(p){
+      var c=el('div','pc'+(p.f?' f':''));
+      if(p.f)c.appendChild(el('div','pb','Recomendado'));
+      c.innerHTML+='<div class="pn">'+p.name+'</div><div class="pp">'+fmtP(p.price)+'<span> / mes</span></div><div class="pv">'+p.visits+' visitas al mes</div><p style="font-size:13px;color:#64748B;margin-bottom:10px">'+p.desc+'</p>';
+      var ul=el('ul','pben');
+      BENS.forEach(function(b){ul.appendChild(el('li',null,b))});
+      c.appendChild(ul);
+      c.appendChild(waBtn('btn bp','Quiero este plan — consultar por WhatsApp','Hola MG Soluciones. Quiero solicitar información para contratar el '+p.name+' de mantenimiento de piscina de '+p.visits+' visitas al mes por '+fmtP(p.price)+'.\n\nQuisiera coordinar los detalles de mi piscina y la disponibilidad.\n\nEnviado desde AquaSmart.'));
+      sc.appendChild(c);
+    });
+    root.appendChild(sc);
+  }
+
+  function renderServ(root){
+    root.appendChild(hdr('AquaSmart','Servicios'));
+    var sc=screen();
+    sc.appendChild(el('p','sub','Un técnico de MG Soluciones puede ir a tu casa. Completá el formulario y en un toque seguimos por WhatsApp para coordinar la visita.'));
+    var c=card();
+    c.appendChild(el('div','ct','🔧 Solicitar Técnico'));
+    c.innerHTML+='<div class="fg"><label class="fl">Nombre *</label><input class="fi" id="s_n" value="'+(S.profile.name||'')+'"></div>'+
+      '<div class="fg"><label class="fl">WhatsApp</label><input class="fi" id="s_w" value="'+(S.profile.whatsapp||'')+'" placeholder="0981..."></div>'+
+      '<div class="fg"><label class="fl">Ciudad / zona</label><input class="fi" id="s_z" value="'+(S.profile.city||'')+'"></div>'+
+      '<div class="fg"><label class="fl">Tipo de consulta</label><select class="fs" id="s_t"><option>Agua turbia / química</option><option>Algas</option><option>Problema de bomba o filtro</option><option>Fuga / nivel de agua</option><option>Instalación de equipo</option><option>Mantenimiento general</option><option>Otro</option></select></div>'+
+      '<div class="fg"><label class="fl">Descripción</label><textarea class="ft" id="s_d"></textarea></div>'+
+      '<div class="fg"><label class="fl">Volumen aprox. (litros)</label><input class="fi" id="s_v" value="'+(S.pool&&S.pool.volumeLiters?S.pool.volumeLiters:'')+'"></div>';
+    c.appendChild(btn('btn bw2','💬 Continuar por WhatsApp',function(){
+      var n=$('s_n').value;if(!n.trim()){alert('Ingresá tu nombre.');return}
+      var lines=['Hola MG Soluciones. Quiero solicitar una visita técnica.','','Nombre: '+n];
+      var w=$('s_w').value,z=$('s_z').value,v=$('s_v').value,d=$('s_d').value;
+      if(w)lines.push('WhatsApp: '+w);if(z)lines.push('Zona: '+z);
+      if(v)lines.push('Piscina: '+Number(v).toLocaleString('es-PY')+' L aprox.');
+      lines.push('Motivo: '+$('s_t').value);if(d.trim())lines.push('Descripción: '+d.trim());
+      lines.push('','Enviado desde AquaSmart.');
+      openWA(lines.join('\n'));
+    }));
+    sc.appendChild(c);
+    root.appendChild(sc);
+  }
+
+  function renderEquip(root){
+    root.appendChild(hdr('AquaSmart','Mejorá tu piscina'));
+    var sc=screen();
+    sc.appendChild(el('p','sub','Menos trabajo manual. Más tiempo para disfrutar. Descubrí cómo automatizar y mejorar tu piscina.'));
+    var items=[
+      {t:'Clorador salino',i:'💧',bg:'linear-gradient(135deg,#00D4AA,#00B894)',d:'Reduce manipular cloro manualmente. Tratamiento más estable y cloro generado automáticamente a partir de sal.',m:'Hola MG Soluciones. Estoy interesado en instalar un clorador salino. Quisiera recibir información.\n\nEnviado desde AquaSmart.',c:'Quiero dejar de cargar cloro a mano'},
+      {t:'Climatización de piscina',i:'🌡️',bg:'linear-gradient(135deg,#00D4FF,#0099CC)',d:'Extendé la temporada de baño. Agua más confortable más allá de los meses calurosos.',m:'Hola MG Soluciones. Estoy interesado en climatizar mi piscina. Quisiera conocer las opciones.\n\nEnviado desde AquaSmart.',c:'Quiero usar la piscina más meses al año'},
+      {t:'Automatización / Domótica',i:'⚡',bg:'linear-gradient(135deg,#8B5CF6,#6D28D9)',d:'Automatizá la bomba, programá horarios y ganá control sobre el sistema.',m:'Hola MG Soluciones. Estoy interesado en automatizar mi piscina. Quisiera conocer las opciones.\n\nEnviado desde AquaSmart.',c:'Quiero automatizar y olvidarme de lo manual'}
+    ];
+    items.forEach(function(it){
+      var c=el('div','ec');
+      c.innerHTML='<div class="ei" style="background:'+it.bg+'">'+it.i+'</div><div class="et">'+it.t+'</div><div class="ed">'+it.d+'</div>';
+      c.appendChild(waBtn('btn bp',it.c,it.m));
+      sc.appendChild(c);
+    });
+    root.appendChild(sc);
+  }
+
+  function renderAlertas(root){
+    root.appendChild(hdr('AquaSmart','Dashboard de alertas'));
+    var sc=screen();
+    var filter=S._afilter||'all';
+    var total=S.alerts.length, ur=unread(), crit=S.alerts.filter(function(a){return a.level==='bad'}).length;
+    var sg=el('div','sg');
+    sg.innerHTML='<div class="sc"><div class="sv">'+total+'</div><div class="sl">Total</div></div><div class="sc u"><div class="sv">'+ur+'</div><div class="sl">Sin leer</div></div><div class="sc c"><div class="sv">'+crit+'</div><div class="sl">Atención</div></div>';
+    sc.appendChild(sg);
+    var tabs=el('div','tabs');
+    [['all','Todas'],['unread','Sin leer'],['bad','Atención']].forEach(function(x){
+      var t=el('button','tab'+(filter===x[0]?' on':''),x[1]);
+      t.onclick=function(){S._afilter=x[0];render()};
+      tabs.appendChild(t);
+    });
+    sc.appendChild(tabs);
+    if(S.alerts.length){
+      var acts=el('div');acts.style.cssText='display:flex;gap:8px;margin-bottom:14px';
+      acts.appendChild(btn('btn bs bsm','Marcar todas leídas',function(){S.alerts.forEach(function(a){a.read=true});save();render()}));
+      acts.appendChild(btn('btn bs bsm','Limpiar',function(){if(confirm('¿Eliminar todas las alertas?')){S.alerts=[];save();render()}}));
+      acts.querySelectorAll('.btn').forEach(function(b){b.style.flex='1'});
+      sc.appendChild(acts);
+    }
+    var list=S.alerts.filter(function(a){return filter==='unread'?!a.read:filter==='bad'?a.level==='bad':true});
+    if(!list.length){
+      var em=el('div','empty');
+      em.innerHTML='<div style="font-size:40px;margin-bottom:12px">🔔</div><p style="font-weight:600;color:#0A2540">'+(filter==='all'?'Sin alertas por ahora':'No hay alertas en este filtro')+'</p><p style="font-size:13px;margin-top:6px">Cuando un análisis detecte problemas, aparecerán aquí.</p>';
+      em.appendChild(btn('btn bp bsm','Analizar agua',function(){go('calcular')}));
+      em.querySelector('.btn').style.cssText='max-width:200px;margin:16px auto 0';
+      sc.appendChild(em);
+    } else list.forEach(function(a){
+      var related=S.history.find(function(h){return h.id===a.cid});
+      var ac=el('div','ac '+(a.level==='bad'?'b':'')+(!a.read?' u':''));
+      ac.innerHTML='<div style="display:flex;justify-content:space-between;margin-bottom:8px;gap:8px"><span style="font-size:12px;font-weight:700;padding:4px 10px;border-radius:8px;background:'+(a.level==='bad'?'#FEE2E2':'#FEF3C7')+';color:'+(a.level==='bad'?'#991B1B':'#92400E')+'">'+(a.level==='bad'?'🔴 Atención':'🟡 Precaución')+'</span><span style="font-size:12px;color:#64748B">'+new Date(a.date).toLocaleString('es-PY',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})+'</span></div>'+
+        '<div style="font-weight:700;font-size:15px;margin-bottom:4px">'+a.title+'</div><div style="font-size:14px;color:#475569;margin-bottom:12px">'+a.message+'</div>';
+      if(related){
+        var params='';
+        if(related.input.ph!=null)params+='<span style="background:#F1F5F9;padding:6px 10px;border-radius:8px;font-size:13px;font-weight:600;margin-right:6px">pH '+related.input.ph+'</span>';
+        if(related.input.chlorine!=null)params+='<span style="background:#F1F5F9;padding:6px 10px;border-radius:8px;font-size:13px;font-weight:600;margin-right:6px">Cl '+related.input.chlorine+'</span>';
+        if(related.input.alkalinity!=null)params+='<span style="background:#F1F5F9;padding:6px 10px;border-radius:8px;font-size:13px;font-weight:600">Alk '+related.input.alkalinity+'</span>';
+        ac.innerHTML+='<div style="margin-bottom:12px">'+params+'</div>';
+      }
+      var row=el('div');row.style.cssText='display:flex;gap:8px;flex-wrap:wrap';
+      row.appendChild(btn('btn bw2 bsm','💬 Consultar',function(){
+        var lines=['Hola MG Soluciones. AquaSmart me generó una alerta y necesito ayuda.','',a.title,a.message,''];
+        if(related){if(related.input.ph!=null)lines.push('pH: '+related.input.ph);if(related.input.chlorine!=null)lines.push('Cloro: '+related.input.chlorine+' ppm');if(related.input.alkalinity!=null)lines.push('Alcalinidad: '+related.input.alkalinity+' ppm')}
+        lines.push('','Enviado desde AquaSmart.');
+        openWA(lines.join('\n'));
+      }));
+      if(!a.read)row.appendChild(btn('btn bs bsm','Marcar leída',function(){a.read=true;save();render()}));
+      row.querySelectorAll('.btn').forEach(function(b){b.style.flex='1'});
+      ac.appendChild(row);
+      sc.appendChild(ac);
+    });
+    root.appendChild(sc);
+  }
+
+  function renderPerfil(root){
+    root.appendChild(hdr('AquaSmart','Perfil'));
+    var sc=screen();
+    var ur=unread();
+    var dash=card();
+    dash.style.cursor='pointer';
+    dash.onclick=function(){go('alertas')};
+    dash.innerHTML='<div class="ct" style="justify-content:space-between"><span>⚠️ Dashboard de alertas</span><span style="font-size:12px;color:#00D4AA;font-weight:600">Ver →</span></div>'+
+      '<div class="sg" style="margin-bottom:0"><div class="sc" style="padding:10px 8px"><div class="sv" style="font-size:20px">'+S.alerts.length+'</div><div class="sl">Total</div></div><div class="sc u" style="padding:10px 8px"><div class="sv" style="font-size:20px">'+ur+'</div><div class="sl">Sin leer</div></div><div class="sc c" style="padding:10px 8px"><div class="sv" style="font-size:20px">'+S.alerts.filter(function(a){return a.level==='bad'}).length+'</div><div class="sl">Atención</div></div></div>';
+    sc.appendChild(dash);
+
+    var c=card();
+    c.appendChild(el('div','ct','👤 Tus datos'));
+    c.innerHTML+='<div class="fg"><label class="fl">Nombre</label><input class="fi" id="p_n" value="'+(S.profile.name||'')+'"></div>'+
+      '<div class="fg"><label class="fl">WhatsApp</label><input class="fi" id="p_w" value="'+(S.profile.whatsapp||'')+'"></div>'+
+      '<div class="fg"><label class="fl">Email</label><input class="fi" id="p_e" type="email" value="'+(S.profile.email||'')+'"></div>'+
+      '<div class="fg"><label class="fl">Ciudad / zona</label><input class="fi" id="p_c" value="'+(S.profile.city||'')+'"></div>';
+    c.appendChild(btn('btn bp','Guardar',function(){
+      S.profile={name:$('p_n').value,whatsapp:$('p_w').value,email:$('p_e').value,city:$('p_c').value};
+      save();alert('Perfil guardado');render();
+    }));
+    sc.appendChild(c);
+
+    var pc=card();
+    pc.appendChild(el('div','ct','🌊 Piscina'));
+    pc.innerHTML+=(S.pool&&S.pool.volumeLiters)?'<p style="font-size:14px">Volumen: <strong>'+fmtV(S.pool.volumeLiters)+'</strong></p>':'<p style="font-size:13px;color:#64748B">Sin volumen. Calculalo en Calcular → Volumen.</p>';
+    sc.appendChild(pc);
+
+    var hc=card();
+    hc.appendChild(el('div','ct','📜 Cálculos'));
+    hc.innerHTML='<p style="font-size:14px">'+S.history.length+' registro(s) en este dispositivo.</p>';
+    sc.appendChild(hc);
+
+    sc.appendChild(btn('btn bw2','💬 Contactar MG Soluciones',function(){
+      openWA('Hola MG Soluciones. Quiero contactarlos. Enviado desde AquaSmart (Perfil).');
+    }));
+    sc.appendChild(el('div','fn','AquaSmart · Asistente Inteligente para Piscinas<br>© MG Soluciones · WhatsApp '+WAD));
+    root.appendChild(sc);
+  }
+
+  // Boot
+  function showErr(e){
+    try{
+      var s=$('spin'); if(s) s.classList.add('hidden');
+      var m=$('bootMsg'); if(m) m.textContent='Error al iniciar';
+      var er=$('bootErr'); if(er){ er.classList.remove('hidden'); er.textContent=String((e&&e.message)||e||'Error desconocido'); }
+    }catch(x){}
+  }
+  try {
+    var m=$('bootMsg'); if(m) m.textContent='Iniciando…';
+    render();
+  } catch(e) {
+    showErr(e);
+  }
+})();
+</script>
+</body>
+</html>
