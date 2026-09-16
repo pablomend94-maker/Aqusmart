@@ -97,6 +97,13 @@ input,textarea,select{user-select:text;-webkit-user-select:text;font-size:16px!i
 .bc{position:absolute;top:-2px;right:-4px;background:#EF4444;color:#fff;font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
 .empty{text-align:center;padding:40px 20px;color:var(--g500)}
 .hi{background:#fff;border-radius:14px;padding:14px 16px;margin-bottom:10px;border:1px solid var(--g200)}
+
+.section-label{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#64748B;margin:4px 0 10px}
+.divider{height:1px;background:linear-gradient(90deg,transparent,#E2E8F0,transparent);margin:8px 0 16px}
+.hint{font-size:12px;color:#64748B;line-height:1.4;margin-top:8px}
+.pill{display:inline-flex;align-items:center;gap:6px;background:#ECFDF5;color:#065F46;font-size:12px;font-weight:650;padding:6px 10px;border-radius:999px;margin-bottom:10px}
+.hero-empty{text-align:center;padding:8px 4px 4px}
+.hero-empty .big{font-size:36px;margin-bottom:8px}
 .fn{text-align:center;margin-top:20px;font-size:12px;color:#94A3B8;line-height:1.4}
 .hidden{display:none!important}
   </style>
@@ -333,13 +340,14 @@ input,textarea,select{user-select:text;-webkit-user-select:text;font-size:16px!i
       stCard.appendChild(pg);
       if(S.pool&&S.pool.volumeLiters)stCard.appendChild(el('div',null,'<div style="margin-top:10px;font-size:13px;color:#64748B">Volumen: '+fmtV(S.pool.volumeLiters)+'</div>'));
     } else {
-      var empty=el('div','empty');empty.style.padding='16px 0';
-      empty.innerHTML='<p>Todavía no hay análisis registrados.</p>';
+      var empty=el('div','hero-empty');
+      empty.innerHTML='<div class="big">🌊</div><p style="font-weight:650;color:#0A2540;margin-bottom:6px">Tu piscina, bajo control</p><p style="font-size:13px;color:#64748B;margin-bottom:14px;line-height:1.4">Medí pH, cloro o alcalinidad y te decimos qué hacer. Lleva menos de un minuto.</p>';
       empty.appendChild(btn('btn bp bsm','Analizar el agua ahora',function(){go('calcular')}));
       stCard.appendChild(empty);
     }
     sc.appendChild(stCard);
 
+    sc.appendChild(el('div','section-label','Accesos rápidos'));
     var qg=el('div','qg');
     function qb(icon,bg,title,sub,t){
       var b=el('button','qb');
@@ -350,7 +358,7 @@ input,textarea,select{user-select:text;-webkit-user-select:text;font-size:16px!i
     qg.appendChild(qb('🧪','linear-gradient(135deg,#00D4AA,#00B894)','Calcular','Analiza el agua','calcular'));
     qg.appendChild(qb('📋','linear-gradient(135deg,#00D4FF,#0099CC)','Planes','Mantenimiento','planes'));
     qg.appendChild(qb('🔧','linear-gradient(135deg,#F59E0B,#D97706)','Servicios','Solicitar asistencia','servicios'));
-    qg.appendChild(qb('⚡','linear-gradient(135deg,#8B5CF6,#6D28D9)','Equipos','Mejorá tu piscina','equipos'));
+    qg.appendChild(qb('✨','linear-gradient(135deg,#8B5CF6,#6D28D9)','Mejoras','Más comodidad y cuidado','equipos'));
     sc.appendChild(qg);
 
     sc.appendChild(waBtn('btn bw2','💬 Quiero que me ayuden con mi piscina','Hola MG Soluciones. Quiero consultar sobre mi piscina. Enviado desde AquaSmart.'));
@@ -373,7 +381,7 @@ input,textarea,select{user-select:text;-webkit-user-select:text;font-size:16px!i
     sc.appendChild(tabs);
 
     if(sub==='params'){
-      sc.appendChild(el('p','sub','Ingresá solo los valores que midiste. No es necesario completar todos.'));
+      sc.appendChild(el('p','sub','Ingresá solo lo que midiste. Con un solo valor (por ejemplo el pH) ya podés obtener una recomendación.'));
       if(S.pool&&S.pool.volumeLiters)sc.appendChild(el('div',null,'<div style="font-size:13px;color:#64748B;margin-bottom:12px">Volumen: <strong>'+fmtV(S.pool.volumeLiters)+'</strong></div>'));
       var c=card();
       c.innerHTML='<div class="ir"><div class="fg"><label class="fl">pH</label><input class="fi" id="i_ph" type="number" step="0.1" placeholder="ej. 7.4" value="'+(S._ph||'')+'"></div><div class="fg"><label class="fl">Cloro libre (ppm)</label><input class="fi" id="i_cl" type="number" step="0.1" placeholder="ej. 1.5" value="'+(S._cl||'')+'"></div></div><div class="ir"><div class="fg"><label class="fl">Alcalinidad (ppm)</label><input class="fi" id="i_ak" type="number" placeholder="ej. 100" value="'+(S._ak||'')+'"></div><div class="fg"><label class="fl">Temperatura (°C)</label><input class="fi" id="i_te" type="number" step="0.5" placeholder="ej. 28" value="'+(S._te||'')+'"></div></div>';
@@ -474,7 +482,8 @@ input,textarea,select{user-select:text;-webkit-user-select:text;font-size:16px!i
   function renderPlanes(root){
     root.appendChild(hdr('AquaSmart','Planes de mantenimiento'));
     var sc=screen();
-    sc.appendChild(el('p','sub','Tu piscina cuidada por profesionales. Vos disfrutás, nosotros nos ocupamos del resto. Coordinamos todo por WhatsApp, sin vueltas.'));
+    sc.appendChild(el('div','pill','✓ Visitas coordinadas por WhatsApp'));
+    sc.appendChild(el('p','sub','Tu piscina cuidada por profesionales. Vos disfrutás, nosotros nos ocupamos del resto. Sin app de turnos complicada: escribís y coordinamos.'));
     PLANS.forEach(function(p){
       var c=el('div','pc'+(p.f?' f':''));
       if(p.f)c.appendChild(el('div','pb','Recomendado'));
@@ -491,7 +500,8 @@ input,textarea,select{user-select:text;-webkit-user-select:text;font-size:16px!i
   function renderServ(root){
     root.appendChild(hdr('AquaSmart','Servicios'));
     var sc=screen();
-    sc.appendChild(el('p','sub','Un técnico de MG Soluciones puede ir a tu casa. Completá el formulario y en un toque seguimos por WhatsApp para coordinar la visita.'));
+    sc.appendChild(el('div','pill','✓ Respuesta por WhatsApp'));
+    sc.appendChild(el('p','sub','Completá lo esencial y seguimos por WhatsApp. Un técnico de MG Soluciones puede ir a tu casa cuando coordinemos.'));
     var c=card();
     c.appendChild(el('div','ct','🔧 Solicitar Técnico'));
     c.innerHTML+='<div class="fg"><label class="fl">Nombre *</label><input class="fi" id="s_n" value="'+(S.profile.name||'')+'"></div>'+
@@ -517,11 +527,12 @@ input,textarea,select{user-select:text;-webkit-user-select:text;font-size:16px!i
   function renderEquip(root){
     root.appendChild(hdr('AquaSmart','Mejorá tu piscina'));
     var sc=screen();
-    sc.appendChild(el('p','sub','Menos trabajo manual. Más tiempo para disfrutar. Descubrí cómo automatizar y mejorar tu piscina.'));
+    sc.appendChild(el('p','sub','Equipos, automatización y mantenimiento especializado. Menos esfuerzo para vos, mejor agua y más vida útil para tu sistema.'));
     var items=[
-      {t:'Clorador salino',i:'💧',bg:'linear-gradient(135deg,#00D4AA,#00B894)',d:'Reduce manipular cloro manualmente. Tratamiento más estable y cloro generado automáticamente a partir de sal.',m:'Hola MG Soluciones. Estoy interesado en instalar un clorador salino. Quisiera recibir información.\n\nEnviado desde AquaSmart.',c:'Quiero dejar de cargar cloro a mano'},
-      {t:'Climatización de piscina',i:'🌡️',bg:'linear-gradient(135deg,#00D4FF,#0099CC)',d:'Extendé la temporada de baño. Agua más confortable más allá de los meses calurosos.',m:'Hola MG Soluciones. Estoy interesado en climatizar mi piscina. Quisiera conocer las opciones.\n\nEnviado desde AquaSmart.',c:'Quiero usar la piscina más meses al año'},
-      {t:'Automatización / Domótica',i:'⚡',bg:'linear-gradient(135deg,#8B5CF6,#6D28D9)',d:'Automatizá la bomba, programá horarios y ganá control sobre el sistema.',m:'Hola MG Soluciones. Estoy interesado en automatizar mi piscina. Quisiera conocer las opciones.\n\nEnviado desde AquaSmart.',c:'Quiero automatizar y olvidarme de lo manual'}
+      {t:'Clorador salino',i:'💧',bg:'linear-gradient(135deg,#00D4AA,#00B894)',d:'Reduce manipular cloro manualmente. Tratamiento más estable y cloro generado automáticamente a partir de sal. Más comodidad cada vez que uses la piscina.',m:'Hola MG Soluciones. Estoy interesado en instalar un clorador salino. Quisiera recibir información y saber qué equipo conviene para mi piscina.\n\nEnviado desde AquaSmart.',c:'Quiero dejar de cargar cloro a mano'},
+      {t:'Climatización de piscina',i:'🌡️',bg:'linear-gradient(135deg,#00D4FF,#0099CC)',d:'Extendé la temporada de baño. Agua a temperatura agradable más allá de los meses más calurosos, ideal para familia e invitados.',m:'Hola MG Soluciones. Estoy interesado en climatizar mi piscina. Quisiera conocer las opciones y qué sistema conviene.\n\nEnviado desde AquaSmart.',c:'Quiero usar la piscina más meses al año'},
+      {t:'Automatización / Domótica',i:'⚡',bg:'linear-gradient(135deg,#8B5CF6,#6D28D9)',d:'Automatizá la bomba, programá horarios y ganá control del sistema. Menos olvidos y más tranquilidad.',m:'Hola MG Soluciones. Estoy interesado en automatizar mi piscina. Quisiera conocer las opciones disponibles.\n\nEnviado desde AquaSmart.',c:'Quiero automatizar y olvidarme de lo manual'},
+      {t:'Mantenimiento de filtro',i:'🧼',bg:'linear-gradient(135deg,#F59E0B,#D97706)',d:'Un filtro en mal estado deja el agua turbia, fuerza la bomba y aumenta el uso de químicos. El mantenimiento profesional limpia o recupera el medio filtrante, revisa válvulas y presión, y ayuda a que el agua circule como debe. Ideal si notás baja presión, agua que no aclara o el filtro hace mucho que no se revisa.',m:'Hola MG Soluciones. Quiero solicitar mantenimiento profesional del filtro de mi piscina. El agua no está filtrando bien / quiero una revisión preventiva.\n\nQuisiera coordinar una visita y conocer el alcance del servicio.\n\nEnviado desde AquaSmart.',c:'Quiero mantener mi filtro en buen estado'}
     ];
     items.forEach(function(it){
       var c=el('div','ec');
@@ -624,7 +635,7 @@ input,textarea,select{user-select:text;-webkit-user-select:text;font-size:16px!i
     sc.appendChild(btn('btn bw2','💬 Contactar MG Soluciones',function(){
       openWA('Hola MG Soluciones. Quiero contactarlos. Enviado desde AquaSmart (Perfil).');
     }));
-    sc.appendChild(el('div','fn','AquaSmart · Asistente Inteligente para Piscinas<br>© MG Soluciones · WhatsApp '+WAD));
+    sc.appendChild(el('div','fn','AquaSmart · Asistente Inteligente para Piscinas<br>Herramienta gratuita de MG Soluciones<br>WhatsApp '+WAD));
     root.appendChild(sc);
   }
 
