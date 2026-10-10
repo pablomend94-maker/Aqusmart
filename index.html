@@ -348,23 +348,32 @@ input,textarea,select{user-select:text;-webkit-user-select:text;font-size:16px!i
   function renderLogin(root){
     var wrap=el('div','login-wrap');
     var card=el('div','login-card');
-    card.innerHTML='<div class="login-title">AquaSmart</div><div class="login-sub">Ingresá tu nombre para personalizar tu experiencia. Cada perfil guarda su piscina, historial y alertas en este dispositivo.</div>';
+    card.appendChild(el('div','login-title','AquaSmart'));
+    card.appendChild(el('div','login-sub','Ingresá tu nombre para personalizar tu experiencia. Cada perfil guarda su piscina, historial y alertas en este dispositivo.'));
     var users=loadUsers();
     var ids=Object.keys(users);
     if(ids.length){
       card.appendChild(el('div','section-label','Continuar como'));
       ids.forEach(function(id){
-        var u=users[id];
-        var chip=el('div','user-chip');
-        var nm=u.profile&&u.profile.name?u.profile.name:'Usuario';
-        chip.innerHTML='<div><strong>'+nm+'</strong><div style="font-size:12px;color:#64748B">'+(u.profile.email||'Sin correo')+'</div></div><span style="color:#00D4AA;font-weight:700">Entrar →</span>';
-        chip.onclick=function(){loginAs(u)};
-        card.appendChild(chip);
+        (function(u){
+          var chip=el('div','user-chip');
+          var nm=u.profile&&u.profile.name?u.profile.name:'Usuario';
+          var em=u.profile&&u.profile.email?u.profile.email:'Sin correo';
+          chip.innerHTML='<div><strong>'+nm+'</strong><div style="font-size:12px;color:#64748B">'+em+'</div></div><span style="color:#00D4AA;font-weight:700">Entrar →</span>';
+          chip.onclick=function(){loginAs(u)};
+          card.appendChild(chip);
+        })(users[id]);
       });
       card.appendChild(el('div','divider',''));
     }
-    card.innerHTML+='<div class="fg"><label class="fl">Nombre *</label><input class="fi" id="lg_name" placeholder="Ej. María" autocomplete="given-name"></div>'+
-      '<div class="fg"><label class="fl">Correo (opcional)</label><input class="fi" id="lg_email" type="email" placeholder="tu@email.com" autocomplete="email"></div>';
+    var fg1=el('div','fg');
+    fg1.appendChild(el('label','fl','Nombre *'));
+    var inName=el('input','fi'); inName.id='lg_name'; inName.placeholder='Ej. María'; inName.setAttribute('autocomplete','given-name');
+    fg1.appendChild(inName); card.appendChild(fg1);
+    var fg2=el('div','fg');
+    fg2.appendChild(el('label','fl','Correo (opcional)'));
+    var inEmail=el('input','fi'); inEmail.id='lg_email'; inEmail.type='email'; inEmail.placeholder='tu@email.com'; inEmail.setAttribute('autocomplete','email');
+    fg2.appendChild(inEmail); card.appendChild(fg2);
     card.appendChild(btn('btn bp','Entrar a AquaSmart',function(){
       var name=($('lg_name').value||'').trim();
       var email=($('lg_email').value||'').trim();
@@ -372,6 +381,7 @@ input,textarea,select{user-select:text;-webkit-user-select:text;font-size:16px!i
       var id=uidFromEmail(email||name);
       var users=loadUsers();
       if(users[id]){
+        users[id].profile=users[id].profile||{};
         users[id].profile.name=name;
         if(email)users[id].profile.email=email;
         saveUsers(users);loginAs(users[id]);return;
@@ -379,7 +389,7 @@ input,textarea,select{user-select:text;-webkit-user-select:text;font-size:16px!i
       var u=emptyUser(name,email);u.id=id;users[id]=u;saveUsers(users);loginAs(u);
     }));
     var note=el('div','auth-note');
-    note.innerHTML='<strong>Sobre Google / iCloud:</strong> en esta versión el acceso es local en tu teléfono (sin servidores). Así tu historial y alertas quedan solo en este dispositivo, separados por perfil. El login con Google, correo en la nube o iCloud requiere un servicio extra (por ejemplo Firebase) y se puede sumar más adelante.';
+    note.innerHTML='<strong>Sobre Google / iCloud:</strong> en esta versión el acceso es local en tu teléfono (sin servidores). Así tu historial y alertas quedan solo en este dispositivo, separados por perfil.';
     card.appendChild(note);
     wrap.appendChild(card);
     root.appendChild(wrap);
@@ -418,9 +428,11 @@ input,textarea,select{user-select:text;-webkit-user-select:text;font-size:16px!i
     }
 
     var stCard=card();
-    stCard.appendChild(el('div','ct','🌊 Estado de tu piscina'));
+    stCard.appendChild(el('div','ct','💧 Estado de tu piscina'));
     if(last){
-      var row=el('div');row.style.cssText='display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap';
+      var iconRow=el('div');iconRow.style.cssText='text-align:center;font-size:28px;margin-bottom:8px';iconRow.textContent='💧';
+      stCard.appendChild(iconRow);
+      var row=el('div');row.style.cssText='display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px;flex-wrap:wrap';
       row.innerHTML='<span class="badge '+(last.ov==='good'?'bg':last.ov==='warn'?'bw':'bb')+'">'+em(last.ov)+' '+st(last.ov)+'</span><span style="font-size:12px;color:#64748B">'+new Date(last.date).toLocaleDateString('es-PY',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})+'</span>';
       stCard.appendChild(row);
       var pg=el('div','pg');
@@ -432,7 +444,7 @@ input,textarea,select{user-select:text;-webkit-user-select:text;font-size:16px!i
       if(S.pool&&S.pool.volumeLiters)stCard.appendChild(el('div',null,'<div style="margin-top:10px;font-size:13px;color:#64748B">Volumen: '+fmtV(S.pool.volumeLiters)+'</div>'));
     } else {
       var empty=el('div','hero-empty');
-      empty.innerHTML='<div class="big">🌊</div><p style="font-weight:650;color:#0A2540;margin-bottom:6px">Tu piscina, bajo control</p><p style="font-size:13px;color:#64748B;margin-bottom:14px;line-height:1.4">Medí pH, cloro o alcalinidad y te decimos qué hacer. Lleva menos de un minuto.</p>';
+      empty.innerHTML='<div class="big">💧</div><p style="font-weight:650;color:#0A2540;margin-bottom:6px">Tu piscina, bajo control</p><p style="font-size:13px;color:#64748B;margin-bottom:14px;line-height:1.4">Medí pH, cloro o alcalinidad y te decimos qué hacer. Lleva menos de un minuto.</p>';
       empty.appendChild(btn('btn bp bsm','Analizar el agua ahora',function(){go('calcular')}));
       stCard.appendChild(empty);
     }
@@ -723,7 +735,7 @@ PLANS.forEach(function(p){
     sc.appendChild(c);
 
     var pc=card();
-    pc.appendChild(el('div','ct','🌊 Piscina'));
+    pc.appendChild(el('div','ct','💧 Piscina'));
     pc.innerHTML+=(S.pool&&S.pool.volumeLiters)?'<p style="font-size:14px">Volumen: <strong>'+fmtV(S.pool.volumeLiters)+'</strong></p>':'<p style="font-size:13px;color:#64748B">Sin volumen. Calculalo en Calcular → Volumen.</p>';
     sc.appendChild(pc);
 
